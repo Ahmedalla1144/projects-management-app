@@ -7,7 +7,6 @@ use App\Http\Requests\StoreProjectRequest;
 use App\Http\Requests\UpdateProjectRequest;
 use App\Http\Resources\ProjectResource;
 use App\Http\Resources\TaskResource;
-use App\Models\Task;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -33,7 +32,9 @@ class ProjectController extends Controller
             $query->where('status', request("status"));
         }
 
-        $projects = ProjectResource::collection($query->orderBy($sort_field, $sort_order)->paginate(10));
+        $perPage = request('perPage') ?: 10;
+
+        $projects = ProjectResource::collection($query->orderBy($sort_field, $sort_order)->paginate($perPage));
         $queryParams = request()->query() ?: null;
         return Inertia::render('Project/Index', compact('projects', 'queryParams'));
     }

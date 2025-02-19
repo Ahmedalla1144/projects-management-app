@@ -23,25 +23,36 @@ export default function TasksTable({ tasks, queryParams, type }: Props) {
     const url = new URL(location.href).pathname.split("/");
     const projectId = url[url.length - 1];
     const [loading, setLoading] = useState(false);
+    const [searchTimeout, setSearchTimeout] = useState<NodeJS.Timeout | null>(
+        null
+    );
+
     if (!queryParams) {
         queryParams = {};
     }
     const handleFiltering = (name: string, value: string) => {
+        if (searchTimeout) {
+            clearTimeout(searchTimeout);
+        }
         setLoading(true);
         if (value) {
             queryParams[name] = value;
         } else {
             delete queryParams[name];
         }
-        setTimeout(() => {
-            if (type === "index") {
-                router.get(route("tasks.index"), queryParams);
-            } else if (type === "show") {
-                router.get(route("projects.show", projectId), queryParams);
-            } else if (type === "dashboard") {
-                router.get(route("dashboard"), queryParams);
-            }
-        }, 1000);
+
+        setSearchTimeout(
+            setTimeout(() => {
+                if (type === "index") {
+                    router.get(route("tasks.index"), queryParams);
+                } else if (type === "show") {
+                    router.get(route("projects.show", projectId), queryParams);
+                } else if (type === "dashboard") {
+                    router.get(route("dashboard"), queryParams);
+                }
+                setLoading(false);
+            }, 600)
+        );
     };
 
     const handleSorting = (name: string) => {
@@ -56,7 +67,7 @@ export default function TasksTable({ tasks, queryParams, type }: Props) {
             router.get(route("tasks.index"), queryParams);
         } else if (type === "show") {
             router.get(route("projects.show", projectId), queryParams);
-        } else if (type === "dashboard" ) {
+        } else if (type === "dashboard") {
             router.get(route("dashboard"), queryParams);
         }
     };
@@ -200,7 +211,7 @@ export default function TasksTable({ tasks, queryParams, type }: Props) {
                     <Table.HeadCell></Table.HeadCell>
                     <Table.HeadCell></Table.HeadCell>
                     <Table.HeadCell>
-                    <TextInput
+                        <TextInput
                             defaultValue={queryParams?.assigned_name}
                             isFocused={queryParams?.assigned_name && true}
                             onChange={(e) =>
@@ -218,7 +229,10 @@ export default function TasksTable({ tasks, queryParams, type }: Props) {
                             <Table.Cell>
                                 <Link
                                     className="text-gray-100 hover:underline hover:text-gray-300"
-                                    href={route("projects.show", task?.project?.id)}
+                                    href={route(
+                                        "projects.show",
+                                        task?.project?.id
+                                    )}
                                 >
                                     {task?.project?.name}
                                 </Link>
@@ -260,28 +274,31 @@ export default function TasksTable({ tasks, queryParams, type }: Props) {
                             </Table.Cell>
                             <Table.Cell>
                                 <div className="flex flex-row gap-2 justify-center items-center">
-                                <Link
-                                    prefetch="hover"
-                                    href={route("tasks.edit", task?.id)}
-                                    className="transition-all duration-200 font-medium text-indigo-500 hover:text-indigo-600 "
-                                >
-                                    Edit
-                                </Link>
-                                <button
-                                    className="transition-all duration-200 font-medium text-red-500 hover:text-red-600 "
-                                    onClick={() => {
-                                        router.delete(
-                                            route("tasks.destroy", task?.id),
-                                            {
-                                                onSuccess: () => {
-                                                    toast.success(success);
-                                                },
-                                            }
-                                        );
-                                    }}
-                                >
-                                    Delete
-                                </button>
+                                    <Link
+                                        prefetch="hover"
+                                        href={route("tasks.edit", task?.id)}
+                                        className="transition-all duration-200 font-medium text-indigo-500 hover:text-indigo-600 "
+                                    >
+                                        Edit
+                                    </Link>
+                                    <button
+                                        className="transition-all duration-200 font-medium text-red-500 hover:text-red-600 "
+                                        onClick={() => {
+                                            router.delete(
+                                                route(
+                                                    "tasks.destroy",
+                                                    task?.id
+                                                ),
+                                                {
+                                                    onSuccess: () => {
+                                                        toast.success(success);
+                                                    },
+                                                }
+                                            );
+                                        }}
+                                    >
+                                        Delete
+                                    </button>
                                 </div>
                             </Table.Cell>
                         </Table.Row>

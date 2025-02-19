@@ -25,7 +25,9 @@ class UsersController extends Controller
             $query->where('name', 'like', "%" . request("name") . "%");
         }
 
-        $users = UserResource::collection($query->orderBy($sort_field, $sort_order)->paginate(10));
+        $perPage = request('perPage') ?: 10;
+
+        $users = UserResource::collection($query->orderBy($sort_field, $sort_order)->paginate($perPage));
         $queryParams = request()->query() ?: null;
         return Inertia::render('User/Index', compact('users', 'queryParams'));
     }

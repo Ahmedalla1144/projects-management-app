@@ -147,6 +147,9 @@ export default function show({ project, queryParams, tasks }: Props) {
                             <Pagination
                                 links={tasks?.meta?.links}
                                 queryParams={queryParams}
+                                from={tasks?.meta?.from}
+                                to={tasks?.meta?.to}
+                                total={tasks?.meta?.total}
                             />
                         </div>
                     </div>

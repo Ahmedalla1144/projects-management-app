@@ -17,6 +17,10 @@ interface Props {
 
 export default function Index({ projects, queryParams }: Props) {
     const [loading, setLoading] = useState(false);
+    const [perPage, serPerPage] = useState(projects.meta.per_page);
+    const [searchTimeout, setSearchTimeout] = useState<NodeJS.Timeout | null>(
+        null
+    );
     const success: any = usePage().props.success;
     const error: any = usePage().props.error;
 
@@ -34,15 +38,20 @@ export default function Index({ projects, queryParams }: Props) {
     }
 
     const handleFiltering = (name: string, value: string) => {
+        if (searchTimeout) {
+            clearTimeout(searchTimeout);
+        }
         setLoading(true);
         if (value) {
             queryParams[name] = value;
         } else {
             delete queryParams[name];
         }
-        setTimeout(() => {
-            router.get(route("projects.index"), queryParams);
-        }, 1000);
+        setSearchTimeout(
+            setTimeout(() => {
+                router.get(route("projects.index"), queryParams);
+            }, 600)
+        );
     };
 
     const handleSorting = (name: string) => {
@@ -53,6 +62,12 @@ export default function Index({ projects, queryParams }: Props) {
             queryParams.sort_field = name;
             queryParams.sort_order = "asc";
         }
+        router.get(route("projects.index"), queryParams);
+    };
+
+    const handlePerPage = (number: number | string) => {
+        setLoading(true);
+        queryParams.perPage = number;
         router.get(route("projects.index"), queryParams);
     };
 
@@ -71,6 +86,23 @@ export default function Index({ projects, queryParams }: Props) {
             <div className="py-12">
                 <div className="mx-auto max-w-8xl space-y-6 sm:px-6 lg:px-8">
                     <div className="bg-white p-4 shadow sm:rounded-lg sm:p-8 dark:bg-gray-800 overflow-x-auto">
+                        <div className="flex gap-1 items-center text-gray-800 dark:text-gray-300 pb-2 text-sm inh">
+                            <p>Showing</p>
+                            <SelectInput
+                                onChange={(e) => handlePerPage(e.target.value)}
+                                value={perPage}
+                                className="h-10 text-sm"
+                            >
+                                <option value={10}>10</option>
+                                <option value={20}>20</option>
+                                <option value={50}>50</option>
+                                <option value={100}>100</option>
+                                <option value={250}>250</option>
+                                <option value={500}>500</option>
+                                <option value={projects.meta.total}>All</option>
+                            </SelectInput>
+                            <p>of entries</p>
+                        </div>
                         <Table hoverable striped>
                             <Table.Head>
                                 <Table.HeadCell>
@@ -192,7 +224,7 @@ export default function Index({ projects, queryParams }: Props) {
                                             </Table.Cell>
                                             <Table.Cell>
                                                 <span
-                                                    className={`px-2 py-1 rounded text-white ${
+                                                    className={`px-2 py-1 text-nowrap rounded text-white ${
                                                         PROJECT_STATUS_CLASS_MAP[
                                                             project?.status
                                                         ]
@@ -223,7 +255,27 @@ export default function Index({ projects, queryParams }: Props) {
                                                 </Link>
                                                 <button
                                                     className="text-red-500"
-                                                    onClick={() => {router.delete(route('projects.destroy', project?.id), {onSuccess: () => {toast.success(success)}, onError: () => {toast.error(error)}})}}
+                                                    onClick={() => {
+                                                        router.delete(
+                                                            route(
+                                                                "projects.destroy",
+                                                                project?.id
+                                                            ),
+                                                            {
+                                                                onSuccess:
+                                                                    () => {
+                                                                        toast.success(
+                                                                            success
+                                                                        );
+                                                                    },
+                                                                onError: () => {
+                                                                    toast.error(
+                                                                        error
+                                                                    );
+                                                                },
+                                                            }
+                                                        );
+                                                    }}
                                                 >
                                                     Delete
                                                 </button>
@@ -236,6 +288,9 @@ export default function Index({ projects, queryParams }: Props) {
                         <Pagination
                             queryParams={queryParams}
                             links={projects?.meta?.links}
+                            from={projects?.meta?.from}
+                            to={projects?.meta?.to}
+                            total={projects?.meta?.total}
                         />
                     </div>
                 </div>

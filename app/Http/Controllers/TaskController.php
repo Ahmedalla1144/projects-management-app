@@ -44,7 +44,9 @@ class TaskController extends Controller
             );
         }
 
-        $tasks = TaskResource::collection($query->orderBy($sort_field, $sort_order)->paginate(20));
+        $perPage = request('perPage') ?: 20;
+
+        $tasks = TaskResource::collection($query->orderBy($sort_field, $sort_order)->paginate($perPage));
         $queryParams = request()->query() ?: null;
         return Inertia::render(
             'Task/Index',
