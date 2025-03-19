@@ -7,7 +7,7 @@ The Project Management App is designed to help teams efficiently manage projects
 ## Features
 
 - **Task Management**: Create, assign, and track tasks within projects.
-- **User Management**: Easily manage user roles and permissions.
+- **User Management**: Easily manage user name and assigned tasks.
 - **Project Organization**: Structure projects for better clarity and focus.
 - **Responsive Design**: Access the app from any device, ensuring productivity on the go.
 
@@ -15,7 +15,7 @@ The Project Management App is designed to help teams efficiently manage projects
 
 - **Backend**: Laravel
 - **Frontend**: Inertia.js, React
-- **Database**: [Your Database Choice, e.g., MySQL, PostgreSQL]
+- **Database**: MySQL
 
 ## Installation
 
