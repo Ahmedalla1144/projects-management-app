@@ -43,5 +43,4 @@ The Project Management App is designed to help teams efficiently manage projects
 6. Start the local development server:
     ```bash
     php artisan serve
-    ```bash
     npm run dev
