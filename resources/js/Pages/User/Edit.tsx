@@ -5,7 +5,9 @@ import SecondaryButton from "@/Components/SecondaryButton";
 import TextInput from "@/Components/TextInput";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { User } from "@/types";
-import { Head, Link, useForm } from "@inertiajs/react";
+import { Head, Link, useForm, usePage } from "@inertiajs/react";
+import { useEffect } from "react";
+import { toast, ToastContainer } from "react-toastify";
 
 type Props = {
     user: User;
@@ -26,9 +28,22 @@ export default function Create({ user }: Props) {
         post(route("users.update", user.id));
     };
 
+    const success: any = usePage().props.success;
+    const error: any = usePage().props.error;
+
+    useEffect(() => {
+        if (success) {
+            toast.success(success);
+        }
+        if (error) {
+            toast.error(error);
+        }
+    }, [success, error]);
+
     return (
         <AuthenticatedLayout header={`Edit User "${user.name}"`}>
             <Head title={`Edit User "${user.name}"`} />
+            <ToastContainer />
 
             <div className="p-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg-px-8">

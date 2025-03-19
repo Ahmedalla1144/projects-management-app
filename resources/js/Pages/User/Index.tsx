@@ -27,7 +27,8 @@ export default function Index({ users, queryParams }: Props) {
         if (error) {
             toast.error(error);
         }
-    }, [success]);
+    }, [success, error]);
+
     if (!queryParams) {
         queryParams = {};
     }

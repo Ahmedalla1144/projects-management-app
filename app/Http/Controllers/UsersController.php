@@ -68,6 +68,7 @@ class UsersController extends Controller
      */
     public function edit(User $user)
     {
+        $user = UserResource::make($user);
         return Inertia::render('User/Edit', compact('user'));
     }
 

@@ -82,7 +82,7 @@ export default function TasksTable({ tasks, queryParams, type }: Props) {
         if (error) {
             toast.error(error);
         }
-    }, [success]);
+    }, [success, error]);
 
     return (
         <>

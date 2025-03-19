@@ -17,7 +17,7 @@ interface Props {
 
 export default function Index({ projects, queryParams }: Props) {
     const [loading, setLoading] = useState(false);
-    const [perPage, serPerPage] = useState(projects.meta.per_page);
+    const [perPage, setPerPage] = useState(projects.meta.per_page);
     const [searchTimeout, setSearchTimeout] = useState<NodeJS.Timeout | null>(
         null
     );
@@ -31,7 +31,7 @@ export default function Index({ projects, queryParams }: Props) {
         if (error) {
             toast.error(error);
         }
-    }, [success]);
+    }, [success, error]);
 
     if (!queryParams) {
         queryParams = {};
