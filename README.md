@@ -30,8 +30,6 @@ The Project Management App is designed to help teams efficiently manage projects
 3. Install the dependencies:
     ```bash
     composer install
-.
-    ```bash
     npm install
 
 4. Set up your environment variables:
